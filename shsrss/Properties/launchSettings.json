@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "shsrss": {
+      "commandName": "Project",
+      "commandLineArgs": "https://www.gibberlings3.net/forums/forum/71-infinity-engine-modding-news.xml/"
+    }
+  }
+}
