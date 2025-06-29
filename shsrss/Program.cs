@@ -1,5 +1,4 @@
-﻿using FluentFTP;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using shsrss.Model;
 using System.Net;
 using System.Text;
@@ -8,31 +7,29 @@ using System.Xml.Serialization;
 
 var builder = new ConfigurationBuilder();
 builder.SetBasePath(Directory.GetCurrentDirectory())
-   .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 var config = builder.Build();
 
-var target = config["FeedUrl"];
-var host = config["Host"];
-var username = config["Username"];
-var password = config["Password"];
+var feedUrl = config["FeedUrl"];
+var destinationFolder = config["DestinationFolder"];
 
-if (string.IsNullOrEmpty(target) || string.IsNullOrEmpty(host) || string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+if (string.IsNullOrEmpty(feedUrl) || string.IsNullOrEmpty(destinationFolder))
 {
-    Console.WriteLine("Missing settings - existing");
+    Console.WriteLine("Missing settings - exiting");
     return;
 }
 
 Console.WriteLine("Attempting to download file");
-var fileResult = await GeFile(target);
+var fileResult = await GeFile(feedUrl);
 
 if (fileResult.success)
 {
     Console.WriteLine("Attempting to write main file");
     File.WriteAllText("index.xml", fileResult.result);
     Console.WriteLine("Attempting to upload main file");
-    UploadFile("index.xml", host, username, password);
-    Console.WriteLine("Upload of main file complete");
+    File.Copy("index.xml", Path.Combine(destinationFolder, "index.html"), true);
+    Console.WriteLine("Copying of main file complete");
 
     Console.WriteLine("Deserializing file");
     var serializer = new XmlSerializer(typeof(rss));
@@ -48,14 +45,12 @@ if (fileResult.success)
         if (item != null && item.title.Length >= 65)
         {
             item.title = item.title[..55];
-
             item.title += "...";
         }
     }
 
-    XmlSerializer xsSubmit = new XmlSerializer(typeof(rss));
+    var xsSubmit = new XmlSerializer(typeof(rss));
     var xml = "";
-
     using var sww = new StringWriter();
     using XmlWriter writer = XmlWriter.Create(sww);
     var ns = new XmlSerializerNamespaces();
@@ -63,9 +58,9 @@ if (fileResult.success)
     xsSubmit.Serialize(writer, rss, ns);
     xml = sww.ToString();
     File.WriteAllText("index-shs.xml", xml);
-    Console.WriteLine("Attempting to upload altered file");
-    UploadFile("index-shs.xml", host, username, password);
-    Console.WriteLine("Upload of altered file complete");
+    Console.WriteLine("Attempting to copy altered file");
+    File.Move("index-shs.xml", Path.Combine(destinationFolder, "index-shs.html"), true);
+    Console.WriteLine("Copy of altered file complete");
 }
 
 static async Task<(bool success, string result)> GeFile(string url)
@@ -90,23 +85,11 @@ static async Task<(bool success, string result)> GeFile(string url)
             }
         }
 
-        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        if (response.StatusCode == HttpStatusCode.NotFound)
         {
             return (false, String.Empty);
         }
 
         return (false, String.Empty);
     }
-}
-
-static void UploadFile(string filename, string host, string username, string password)
-{
-    using var ftp = new FtpClient(host, username, password);
-    ftp.Connect();
-    if (ftp.FileExists(filename))
-    {
-        ftp.DeleteFile(filename);
-    }
-    ftp.UploadFile(filename, filename);
-    ftp.Disconnect();
 }
