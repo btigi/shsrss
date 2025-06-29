@@ -101,10 +101,6 @@ static async Task<(bool success, string result)> GeFile(string url)
 
 static void UploadFile(string filename, string host, string username, string password)
 {
-    //const string Host = "ftp.mcwrench.com";
-    //const string Username = "shsrss@igidata.com";
-    //const string Password = "ROU\"HVinuq2M N(P*Rmq9n2iaa";
-
     using var ftp = new FtpClient(host, username, password);
     ftp.Connect();
     if (ftp.FileExists(filename))
