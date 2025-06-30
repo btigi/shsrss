@@ -1,6 +1,6 @@
 # ShsRss
 
-A command line utility to download the [IE Modding News](https://www.gibberlings3.net/forums/forum/71-infinity-engine-modding-news.xml/) RSS feed from [Gibberlings 3](https://www.gibberlings3.net/) and upload to alternative hosting (presumably with a lower SSL requirement). Two files are produced:
+A command line utility to download the [IE Modding News](https://www.gibberlings3.net/forums/forum/71-infinity-engine-modding-news.xml/) RSS feed from [Gibberlings 3](https://www.gibberlings3.net/) and move it to a local directory. The intent is the local directory is a website with a lower SSL requirement than the original host. Two files are produced:
 
 - index.xml -> a file identical to the orignal feed file
 - index-shs.xml -> a file with the title attribute trimmed to 55 characters
@@ -8,9 +8,8 @@ A command line utility to download the [IE Modding News](https://www.gibberlings
 ## Usage
 Ensure appsettings.json contains appropriate values:
 - `FeedUrl` - The full url to the IE Modding News RSS feed, e.g. https://www.gibberlings3.net/forums/forum/71-infinity-engine-modding-news.xml/
-- `Host` - The host for the FTP site to upload to
-- `Username` - The username for the FTP site to upload to
-- `Password` - The password for the FTP site to upload to
+- `DestinationFolder` - The local folder to move the output files to
+
 
 ## Compiling
 
