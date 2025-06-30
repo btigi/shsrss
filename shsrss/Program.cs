@@ -28,7 +28,7 @@ if (fileResult.success)
     Console.WriteLine("Attempting to write main file");
     File.WriteAllText("index.xml", fileResult.result);
     Console.WriteLine("Attempting to upload main file");
-    File.Copy("index.xml", Path.Combine(destinationFolder, "index.html"), true);
+    File.Copy("index.xml", Path.Combine(destinationFolder, "index.xml"), true);
     Console.WriteLine("Copying of main file complete");
 
     Console.WriteLine("Deserializing file");
@@ -59,7 +59,7 @@ if (fileResult.success)
     xml = sww.ToString();
     File.WriteAllText("index-shs.xml", xml);
     Console.WriteLine("Attempting to copy altered file");
-    File.Move("index-shs.xml", Path.Combine(destinationFolder, "index-shs.html"), true);
+    File.Move("index-shs.xml", Path.Combine(destinationFolder, "index-shs.xml"), true);
     Console.WriteLine("Copy of altered file complete");
 }
 
